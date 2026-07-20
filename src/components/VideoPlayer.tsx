@@ -443,10 +443,10 @@ export default function VideoPlayer({ videoUrl, videoType, onSync, externalState
               <div className="flex items-center">
                 <input ref={fileRef} type="file" accept=".srt,.vtt" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) loadSub(f); e.target.value = '' }} />
 
-                {/* Settings */}
+{/* Settings */}
                 <div className="relative" data-settings>
-                  <button onClick={e => { e.stopPropagation(); setPanel(panel === 'main' ? 'none' : 'main') }} className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center text-white/60 hover:text-white rounded-lg hover:bg-white/10 active:bg-white/15 transition-all">
-                    <svg className="w-[18px] h-[18px] sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <button onClick={e => { e.stopPropagation(); setPanel(panel === 'main' ? 'none' : 'main') }} className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center text-white/60 hover:text-white rounded-lg hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 min-h-[44px] min-w-[44px]">
+                    <svg className="w-6 h-6 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -533,19 +533,19 @@ export default function VideoPlayer({ videoUrl, videoType, onSync, externalState
                         <div className="flex items-center justify-between mb-1.5"><span className="text-xs text-white/40" style={{ fontFamily: 'var(--font-body)' }}>شفافیت</span><span className="text-xs text-[var(--accent)]">{subBg}%</span></div>
                         <input type="range" min="0" max="100" value={subBg} onChange={e => setSubBg(+e.target.value)} className="w-full h-1" />
                       </div>
-                      <div className="mb-4">
+<div className="mb-4">
                         <span className="text-xs text-white/40 block mb-2" style={{ fontFamily: 'var(--font-body)' }}>رنگ</span>
-                        <div className="flex gap-2.5 sm:gap-2 justify-center sm:justify-start">
+                        <div className="flex gap-3 sm:gap-2 justify-center sm:justify-start">
                           {['#ffffff', '#ffff00', '#00ff00', '#00ffff', '#ff6b6b'].map(c => (
-                            <button key={c} onClick={() => setSubColor(c)} className={`w-9 h-9 sm:w-7 sm:h-7 rounded-full border-2 transition-all active:scale-90 ${subColor === c ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{ background: c }} />
+                            <button key={c} onClick={() => setSubColor(c)} className={`w-11 h-11 sm:w-9 sm:h-9 rounded-full border-2 transition-all active:scale-95 ${subColor === c ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{ background: c }} />
                           ))}
                         </div>
                       </div>
                       <div>
                         <span className="text-xs text-white/40 block mb-2" style={{ fontFamily: 'var(--font-body)' }}>فونت</span>
-                        <div className="flex gap-1.5">
+                        <div className="flex gap-2 sm:gap-1.5 flex-wrap">
                           {[{ k: 'default', l: 'پیش‌فرض' }, { k: 'sans', l: 'بی‌سری' }, { k: 'mono', l: 'تک‌فاصله' }].map(f => (
-                            <button key={f.k} onClick={() => setSubFont(f.k)} className={`px-3 py-2.5 sm:py-1.5 rounded-lg text-xs transition active:bg-white/10 ${subFont === f.k ? 'bg-[var(--accent)]/15 text-[var(--accent)]' : 'text-white/50 hover:bg-white/5'}`} style={{ fontFamily: f.k === 'mono' ? 'var(--font-mono)' : 'var(--font-body)' }}>{f.l}</button>
+                            <button key={f.k} onClick={() => setSubFont(f.k)} className={`px-4 py-3 sm:px-3 sm:py-2 rounded-lg text-xs transition active:bg-white/10 ${subFont === f.k ? 'bg-[var(--accent)]/15 text-[var(--accent)]' : 'text-white/50 hover:bg-white/5'}`} style={{ fontFamily: f.k === 'mono' ? 'var(--font-mono)' : 'var(--font-body)' }}>{f.l}</button>
                           ))}
                         </div>
                       </div>
@@ -554,11 +554,11 @@ export default function VideoPlayer({ videoUrl, videoType, onSync, externalState
                 </div>
 
                 {/* Fullscreen — always visible, clearly tappable */}
-                <button onClick={toggleFs} className="w-10 h-10 sm:w-10 sm:h-10 flex items-center justify-center text-white/60 hover:text-white rounded-lg hover:bg-white/10 active:bg-white/15 transition-all">
+                <button onClick={toggleFs} className="w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center text-white/60 hover:text-white rounded-lg hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 min-h-[44px] min-w-[44px]">
                   {fs ? (
-                    <svg className="w-[18px] h-[18px] sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" /></svg>
+                    <svg className="w-6 h-6 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" /></svg>
                   ) : (
-                    <svg className="w-[18px] h-[18px] sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" /></svg>
+                    <svg className="w-6 h-6 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" /></svg>
                   )}
                 </button>
               </div>
