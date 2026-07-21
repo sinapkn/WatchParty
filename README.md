@@ -10,7 +10,6 @@
 <p align="center">
   <a href="./README-FA.md">🇮🇷 فارسی</a>
 </p>
----
 
 ## ✨ Features
 
