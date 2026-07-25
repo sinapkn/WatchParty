@@ -160,7 +160,7 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
   }, [externalState])
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full min-h-0">
       <div ref={containerRef} className="absolute inset-0 bg-black max-sm:rounded-none sm:rounded-xl overflow-hidden" />
     </div>
   )
@@ -332,13 +332,23 @@ export default function VideoPlayer({ videoUrl, videoType, onSync, externalState
     return () => { if (subTimer.current) clearInterval(subTimer.current) }
   }, [activeSub, subs, videoType])
 
-  // ── External sync ──
+  // ── External sync for direct video ──
   useEffect(() => {
     if (!externalState || localAction.current || videoType === 'youtube') return
     const v = videoRef.current; if (!v) return
-    if (Math.abs(v.currentTime - externalState.currentTime) > 0.5) v.currentTime = externalState.currentTime
-    if (externalState.isPlaying && v.paused) v.play().catch(() => {})
-    else if (!externalState.isPlaying && !v.paused) v.pause()
+    const timeDiff = Math.abs(v.currentTime - externalState.currentTime)
+    const isLocallyPlaying = !v.paused
+    const shouldPlay = externalState.isPlaying
+
+    if (timeDiff > 1) {
+      v.currentTime = externalState.currentTime
+    }
+    if (shouldPlay && v.paused) {
+      v.play().catch(() => {})
+    } else if (!shouldPlay && !v.paused) {
+      v.pause()
+    }
+    // If drift < 1s and same play state, do nothing
   }, [externalState, videoType])
 
   const emit = useCallback((p: boolean, t: number) => {
