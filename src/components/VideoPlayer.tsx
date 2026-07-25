@@ -85,6 +85,7 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
         height: '100%',
         width: '100%',
         videoId: id,
+        host: 'https://www.youtube.com',
         playerVars: {
           rel: 0,
           autoplay: 0,
@@ -92,6 +93,8 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
           controls: 1,
           modestbranding: 1,
           playsinline: 1,
+          fs: 1,
+          origin: typeof window !== 'undefined' ? window.location.origin : '',
         },
         events: {
           onReady: () => {
@@ -161,7 +164,7 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
 
   return (
     <div className="relative w-full h-full min-h-0">
-      <div ref={containerRef} className="absolute inset-0 bg-black max-sm:rounded-none sm:rounded-xl overflow-hidden" />
+      <div ref={containerRef} className="w-full h-full min-h-[200px] bg-black max-sm:rounded-none sm:rounded-xl overflow-hidden" />
     </div>
   )
 }
