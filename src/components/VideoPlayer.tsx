@@ -30,32 +30,25 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
   onSync: (state: { isPlaying: boolean; currentTime: number }) => void
   externalState?: { isPlaying: boolean; currentTime: number } | null
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const playerRef = useRef<any>(null)
-  const apiReadyRef = useRef(false)
   const localAction = useRef(false)
   const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
   const lastSyncRef = useRef({ isPlaying: false, time: 0, timestamp: 0 })
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Throttled sync
   const emitSync = useCallback((isPlaying: boolean, time: number) => {
     const prev = lastSyncRef.current
     const timeDrift = Math.abs(prev.time - time)
     const stateChanged = prev.isPlaying !== isPlaying
     const now = Date.now()
-
     if (!stateChanged && timeDrift < 3) return
     if (now - prev.timestamp < 200) return
-
     localAction.current = true
     onSync({ isPlaying, currentTime: time })
     lastSyncRef.current = { isPlaying, time, timestamp: now }
-
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
-    debounceTimer.current = setTimeout(() => {
-      localAction.current = false
-    }, 300)
+    debounceTimer.current = setTimeout(() => { localAction.current = false }, 300)
   }, [onSync])
 
   const youtubeId = useCallback(() => {
@@ -71,20 +64,19 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
     return videoUrl
   }, [videoUrl])
 
+  const id = youtubeId()
+
+  // Load YT API and wrap the iframe in a Player
   useEffect(() => {
     let cancelled = false
 
     const initYT = () => {
-      if (cancelled || !window.YT?.Player || !containerRef.current) return
+      if (cancelled || !window.YT?.Player || !iframeRef.current) return
       if (playerRef.current) return
 
-      const id = youtubeId()
-      console.log('[YouTube] Creating player with ID:', id)
+      console.log('[YouTube] Wrapping iframe for ID:', id)
 
-      playerRef.current = new window.YT.Player(containerRef.current, {
-        height: '100%',
-        width: '100%',
-        videoId: id,
+      playerRef.current = new window.YT.Player(iframeRef.current, {
         host: 'https://www.youtube.com',
         playerVars: {
           rel: 0,
@@ -99,21 +91,16 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
         events: {
           onReady: () => {
             console.log('[YouTube] Player ready')
-            apiReadyRef.current = true
             pollTimer.current = setInterval(() => {
               if (!playerRef.current?.getCurrentTime) return
               const state = playerRef.current.getPlayerState()
               const time = playerRef.current.getCurrentTime() || 0
-              if (state === 1 || state === 2) {
-                emitSync(state === 1, time)
-              }
+              if (state === 1 || state === 2) emitSync(state === 1, time)
             }, 2000)
           },
           onStateChange: (e: { data: number }) => {
             const time = playerRef.current?.getCurrentTime?.() || 0
-            if (e.data === 1 || e.data === 2) {
-              emitSync(e.data === 1, time)
-            }
+            if (e.data === 1 || e.data === 2) emitSync(e.data === 1, time)
           },
         },
       })
@@ -139,32 +126,31 @@ function YouTubePlayer({ videoUrl, onSync, externalState }: {
       if (pollTimer.current) clearInterval(pollTimer.current)
       if (debounceTimer.current) clearTimeout(debounceTimer.current)
     }
-  }, [videoUrl, onSync, youtubeId, emitSync])
+  }, [id, onSync, emitSync])
 
-  // External sync — always sync play/pause for all users
   useEffect(() => {
     if (!externalState || localAction.current || !playerRef.current?.seekTo) return
     const player = playerRef.current
     const currentTime = player.getCurrentTime()
     const timeDiff = Math.abs(currentTime - externalState.currentTime)
-
-    // Seek if drift > 1s
-    if (timeDiff > 1) {
-      player.seekTo(externalState.currentTime, true)
-    }
-
-    // Always sync play/pause
+    if (timeDiff > 1) player.seekTo(externalState.currentTime, true)
     const playerState = player.getPlayerState()
-    if (externalState.isPlaying && playerState !== 1) {
-      player.playVideo()
-    } else if (!externalState.isPlaying && playerState === 1) {
-      player.pauseVideo()
-    }
+    if (externalState.isPlaying && playerState !== 1) player.playVideo()
+    else if (!externalState.isPlaying && playerState === 1) player.pauseVideo()
   }, [externalState])
 
   return (
-    <div className="relative w-full h-full min-h-0">
-      <div ref={containerRef} className="w-full h-full min-h-[200px] bg-black max-sm:rounded-none sm:rounded-xl overflow-hidden" />
+    <div className="video-player-container w-full h-full bg-black flex items-center justify-center overflow-hidden">
+      <iframe
+        ref={iframeRef}
+        className="w-full h-full"
+        style={{ aspectRatio: '16/9', maxHeight: '100%' }}
+        src={`https://www.youtube.com/embed/${id}?rel=0&enablejsapi=1&playsinline=1&fs=1`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowFullScreen
+        frameBorder="0"
+        title="YouTube video player"
+      />
     </div>
   )
 }
